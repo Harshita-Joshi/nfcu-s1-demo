@@ -12,8 +12,17 @@
 set -euo pipefail
 
 AWS_REGION="${AWS_REGION:-us-east-1}"
-GH_OWNER="${GH_OWNER:?Set GH_OWNER to your GitHub username (matches the S3 bucket suffix)}"
-S3_BUCKET="${S3_BUCKET:-nfcu-s1-models-${GH_OWNER}}"
+GH_OWNER="${GH_OWNER:?Set GH_OWNER to your GitHub username}"
+GH_REPO="${GH_REPO:-nfcu-s1-demo}"
+
+# Prefer the MODEL_BUCKET repo variable set by the bootstrap; fall back to an
+# explicit S3_BUCKET env override; error out if neither is available so we
+# never sign+upload to the wrong bucket by accident.
+if [ -z "${S3_BUCKET:-}" ] && command -v gh >/dev/null 2>&1; then
+  S3_BUCKET=$(gh variable get MODEL_BUCKET --repo "${GH_OWNER}/${GH_REPO}" 2>/dev/null || true)
+fi
+S3_BUCKET="${S3_BUCKET:?S3_BUCKET unset and gh variable MODEL_BUCKET not found on ${GH_OWNER}/${GH_REPO}. Set one or the other.}"
+
 S3_KEY_PREFIX="${S3_KEY_PREFIX:-fraud-detector}"
 KMS_ALIAS="${KMS_ALIAS:-alias/nfcu-model-signing}"
 

@@ -85,9 +85,15 @@ jobs:
           role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT }}:role/gha-deploy-dev
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
+      # Authenticate to BOTH our ECR (push target) AND the AWS-owned account
+      # 683313688378 where the SageMaker XGBoost public base image lives.
+      # Without the second registry, `docker build` fails to pull the FROM
+      # image with HTTP 401.
+      - name: Login to Amazon ECR (own + AWS SageMaker public)
         id: ecr-login
         uses: aws-actions/amazon-ecr-login@fa648b43de3d4d023bcb3f89ed6940096949c419  # v2.1.5
+        with:
+          registries: "${{ vars.AWS_ACCOUNT }},683313688378"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5  # v4.1.0

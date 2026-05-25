@@ -45,7 +45,9 @@ module "sagemaker_endpoint" {
   private_subnet_ids    = var.private_subnet_ids
   kms_key_arn           = var.kms_key_arn
 
-  instance_type  = "ml.t3.medium"
+  # ml.t3.medium isn't in the hashicorp/aws v5 provider's validation list yet.
+  # ml.t2.medium is the cheapest type in the allowlist and fine for the lab.
+  instance_type  = "ml.t2.medium"
   instance_count = 1
 }
 

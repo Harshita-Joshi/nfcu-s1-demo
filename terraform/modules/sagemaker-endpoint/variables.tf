@@ -48,9 +48,9 @@ variable "kms_key_arn" {
 }
 
 variable "instance_type" {
-  description = "SageMaker instance type. ml.t3.medium for lab; ml.m5.xlarge realistic for production fraud inference."
+  description = "SageMaker instance type. ml.t2.medium for lab (in the AWS provider's hardcoded allowlist); ml.m5.xlarge realistic for production fraud inference."
   type        = string
-  default     = "ml.t3.medium"
+  default     = "ml.t2.medium"
 }
 
 variable "instance_count" {

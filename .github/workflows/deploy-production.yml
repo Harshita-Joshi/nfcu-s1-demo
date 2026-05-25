@@ -69,9 +69,10 @@ jobs:
 
       - name: Cosign verify-blob (model artifact)
         run: |
+          # Bundle format (cosign 3.x) — see deploy-dev.yml for the rationale.
           cosign verify-blob \
             --key "awskms:///alias/nfcu-model-signing" \
-            --signature /tmp/model.sig \
+            --bundle /tmp/model.sig \
             --insecure-ignore-tlog \
             /tmp/model.tar.gz
 

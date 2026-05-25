@@ -59,9 +59,12 @@ jobs:
 
       - name: Cosign verify-blob against KMS key
         run: |
+          # The signature is uploaded as a cosign 3.x bundle (JSON) by
+          # scripts/build-and-sign-model.sh, so we verify with --bundle, not
+          # --signature (which expects raw IEEE_P1363 bytes).
           cosign verify-blob \
             --key "awskms:///alias/nfcu-model-signing" \
-            --signature /tmp/model.sig \
+            --bundle /tmp/model.sig \
             --insecure-ignore-tlog \
             /tmp/model.tar.gz
 

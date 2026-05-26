@@ -33,6 +33,10 @@ MODEL_DIR="${REPO_ROOT}/models/fraud-detector"
 cleanup() { rm -rf "${WORKDIR}"; }
 trap cleanup EXIT
 
+echo "==> Pin training deps to match the inference container (numpy<2, sklearn 1.5.2)"
+echo "    Mismatch here yields ModuleNotFoundError: numpy._core.multiarray at /ping."
+pip install --quiet "numpy<2" "scikit-learn==1.5.2" "pandas" "xgboost"
+
 echo "==> Train model -> model.pkl"
 python3 "${MODEL_DIR}/train.py" --output "${MODEL_DIR}/model.pkl"
 

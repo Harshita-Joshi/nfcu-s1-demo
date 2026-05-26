@@ -6,10 +6,11 @@
 
 FROM 683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-xgboost:1.7-1
 
-# scikit-learn is needed for the Pipeline + OneHotEncoder. The base image
-# usually has it, but install explicitly so the build is independent of the
-# base's package set.
-RUN pip install --no-cache-dir scikit-learn pandas
+# scikit-learn is needed for the Pipeline + OneHotEncoder. Pin numpy < 2 and
+# sklearn 1.5.2 so the inference env matches the training env — pickles made
+# with numpy 2.x reference numpy._core.multiarray which doesn't exist in
+# numpy 1.x and the AWS XGBoost 1.7-1 base image is numpy 1.x.
+RUN pip install --no-cache-dir "numpy<2" "scikit-learn==1.5.2" pandas
 
 # SageMaker convention: model artifacts at /opt/ml/model, inference code under
 # /opt/ml/model/code/. SAGEMAKER_PROGRAM picks up inference.py from that path.
